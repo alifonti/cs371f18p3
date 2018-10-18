@@ -11,3 +11,8 @@ case class Minus(left: Expr, right: Expr) extends BinaryExpr(left, right)
 case class Times(left: Expr, right: Expr) extends BinaryExpr(left, right)
 case class Div(left: Expr, right: Expr) extends BinaryExpr(left, right)
 case class Mod(left: Expr, right: Expr) extends BinaryExpr(left, right)
+case class Variable(name: String) extends Expr
+case class Block (expressions: Expr*) extends Expr
+case class Cond(guard: Expr, thenBranch: Expr, elseBranch: Expr) extends Expr
+case class Loop(guard: Expr, body: Expr) extends Expr
+case class Assign(left: String, right: Expr) extends Expr

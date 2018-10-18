@@ -22,11 +22,25 @@ object CombinatorParser extends JavaTokenParsers {
       case l ~ Some("%" ~ r) => Mod(l, r)
     }
 
+  /** factor ::= ident | ... where ident ::= [a-zA-Z] [a-zA-Z0-9]* */
   /** factor ::= wholeNumber | "+" factor | "-" factor | "(" expr ")" */
   def factor: Parser[Expr] = (
     wholeNumber ^^ { case s => Constant(s.toInt) }
     | "+" ~> factor ^^ { case e => e }
     | "-" ~> factor ^^ { case e => UMinus(e) }
     | "(" ~ expr ~ ")" ^^ { case _ ~ e ~ _ => e }
+    | ident ^^ { case s => Variable(s) }
+  )
+
+  /** add support for these other constructs
+    * statement   ::= expression ";" | assignment | conditional | loop | block
+    * assignment  ::= ident "=" expression ";"
+    * conditional ::= "if" "(" expression ")" block [ "else" block ]
+    * loop        ::= "while" "(" expression ")" block
+    * block       ::= "{" statement* "}"
+    */
+  def statement: Parser[Expr] = (
+    expr ~ ";" ^^ { case e ~ _ => e }
+    | ident ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) }
   )
 }
