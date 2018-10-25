@@ -32,7 +32,8 @@ object CombinatorParser extends JavaTokenParsers {
     | ident ^^ { case s => Variable(s) }
   )
 
-  /** add support for these other constructs
+  /**
+    * add support for these other constructs
     * statement   ::= expression ";" | assignment | conditional | loop | block
     * assignment  ::= ident "=" expression ";"
     * conditional ::= "if" "(" expression ")" block [ "else" block ]
@@ -40,7 +41,26 @@ object CombinatorParser extends JavaTokenParsers {
     * block       ::= "{" statement* "}"
     */
   def statement: Parser[Expr] = (
-    expr ~ ";" ^^ { case e ~ _ => e }
-    | ident ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) }
+    expr ~ ";" ^^ { case e ~ _ => e } //expression case
+    | ident ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) } //assignment case
+    | "if" ~ "(" ~ expr ~ ")" ~ block ~ block ^^ { case _ ~ _ ~ e ~ _ ~ tb ~ eb => Cond(e, tb, eb) } //conditional case
+    | "while" ~ "(" ~ expr ~ ")" ~ block ^^ { case _ ~ _ ~ e ~ _ ~ b => Loop(e, b) } //loop case
+    | "{" ~ rep (statement) ~ "}" ^^ { case _ ~ statements ~ _ => Block(statements) } //block case
+  )
+
+  def assignment: Parser[Expr] = (
+    ident ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) }
+  )
+
+  def conditional: Parser[Expr] = (
+    "if" ~ "(" ~ expr ~ ")" ~ block ~ block ^^ { case _ ~ _ ~ e ~ _ ~ tb ~ eb => Cond(e, tb, eb) }
+  )
+
+  def loop: Parser[Expr] = (
+    "while" ~ "(" ~ expr ~ ")" ~ block ^^ { case _ ~ _ ~ e ~ _ ~ b => Loop(e, b) }
+  )
+
+  def block: Parser[Expr] = (
+    "{" ~ rep (statement) ~ "}" ^^ { case _ ~ statements ~ _ => Block(statements) }
   )
 }
