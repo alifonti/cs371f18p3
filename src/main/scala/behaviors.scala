@@ -45,19 +45,25 @@ object behaviors {
     case Div(l, r)   => buildExprString(prefix, "Div", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r))
     case Mod(l, r)   => buildExprString(prefix, "Mod", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r))
     case Variable(n) => prefix + n
+    case Block(expressions @ _*) => buildExprString(prefix, "Block", expressions.map( expr => toFormattedString(prefix)(expr) ): _* )
+    case Cond(l, r, e) => buildExprString(prefix, "Cond", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r), toFormattedString(prefix + INDENT)(e))
+    case Loop(l, r) => buildExprString(prefix, "Loop", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r))
+    case Assign(l, r) => buildExprString(prefix, "Assign", l, toFormattedString(prefix + INDENT)(r))
   }
 
   def toFormattedString(e: Expr): String = toFormattedString("")(e)
 
-  def buildExprString(prefix: String, nodeString: String, leftString: String, rightString: String) = {
+  def buildExprString(prefix: String, nodeString: String, strings: String*) = {
     val result = new StringBuilder(prefix)
     result.append(nodeString)
     result.append("(")
     result.append(EOL)
-    result.append(leftString)
-    result.append(", ")
-    result.append(EOL)
-    result.append(rightString)
+    result.append(strings.head)
+    strings.tail.foreach{ s =>
+      result.append(s)
+      result.append(", ")
+      result.append(EOL)
+    }
     result.append(")")
     result.toString
   }
