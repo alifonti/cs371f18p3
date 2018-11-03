@@ -1,5 +1,8 @@
 package edu.luc.cs.laufer.cs473.expressions
 
+import org.jline.reader.LineReaderBuilder
+import org.jline.terminal.TerminalBuilder
+
 object CombinatorCalculator extends App {
 
   def processExpr(input: String): Unit = {
@@ -19,7 +22,11 @@ object CombinatorCalculator extends App {
   }
 
   if (args.length > 0) {
-    processExpr(args mkString " ")
+    val terminal = TerminalBuilder.terminal
+    val reader = LineReaderBuilder.builder.terminal(terminal).build
+    val prompt = "Parser> "
+    try { processExpr(reader.readLine(prompt)) }
+    catch { case _: Throwable => println("found some exception") }
   } else {
     print("Enter infix expression: ")
     scala.io.Source.stdin.getLines foreach { line =>
