@@ -58,11 +58,13 @@ object behaviors {
     result.append(nodeString)
     result.append("(")
     result.append(EOL)
-    result.append(strings.head)
-    strings.tail.foreach { s =>
-      result.append(s)
-      result.append(", ")
-      result.append(EOL)
+    if (strings.nonEmpty) {  // added protection for empty strings.head call
+      result.append(strings.head)
+      strings.tail.foreach { s =>
+        result.append(s)
+        result.append(", ")
+        result.append(EOL)
+      }
     }
     result.append(")")
     result.toString
