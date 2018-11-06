@@ -9,8 +9,8 @@ object CombinatorParser extends JavaTokenParsers {
   def expr: Parser[Expr] =
     term ~! rep(("+" | "-") ~ term) ^^ {
       case l ~ exprs => exprs.foldLeft(l) {
-        case (e, "+" ~ r) => Plus(r, e)
-        case (e, "-" ~ r) => Minus(r, e)
+        case (e, "+" ~ r) => Plus(e, r)
+        case (e, "-" ~ r) => Minus(e, r)
       }
     }
 
@@ -18,9 +18,9 @@ object CombinatorParser extends JavaTokenParsers {
   def term: Parser[Expr] =
     factor ~! rep(("*" | "/" | "%") ~ term) ^^ {
       case l ~ terms => terms.foldLeft(l) {
-        case (e, "*" ~ r) => Times(r, e)
-        case (e, "/" ~ r) => Div(r, e)
-        case (e, "%" ~ r) => Mod(r, e)
+        case (e, "*" ~ r) => Times(e, r)
+        case (e, "/" ~ r) => Div(e, r)
+        case (e, "%" ~ r) => Mod(e, r)
       }
     }
 
