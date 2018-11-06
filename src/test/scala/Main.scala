@@ -18,6 +18,7 @@ object Main extends App {
   println(toFormattedString(complex2))
 }
 
+/* 3b tests
 class Test extends FunSuite {
   test("evaluate(p)") { assert(evaluate(complex1) === -1) }
   test("size(p)") { assert(size(complex1) === 9) }
@@ -25,4 +26,4 @@ class Test extends FunSuite {
   test("evaluate(q)") { assert(evaluate(complex2) === 0) }
   test("size(q)") { assert(size(complex2) === 10) }
   test("height(q)") { assert(height(complex2) === 5) }
-}
+}*/
