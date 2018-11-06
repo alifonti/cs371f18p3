@@ -59,7 +59,7 @@ object behaviors {
     result.append(nodeString)
     result.append("(")
     result.append(EOL)
-    if (strings.nonEmpty) { // added protection for empty strings.head call
+    if (strings.nonEmpty) {
       result.append(strings.head)
       strings.tail.foreach { s =>
         result.append(s)
@@ -84,51 +84,59 @@ object behaviors {
   // to Pretty-printer String
   def toPrettyString(prefix: String)(e: Expr): String = e match {
     case Constant(c)             => prefix + c.toString
-    case UMinus(r)               => buildPUnaryExprString(prefix, "UMinus", toPrettyString(prefix)(r))
-    case Plus(l, r)              => buildPExprString(false, prefix, " + ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Minus(l, r)             => buildPExprString(false, prefix, " - ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Times(l, r)             => buildPExprString(false, prefix, " * ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Div(l, r)               => buildPExprString(false, prefix, " / ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Mod(l, r)               => buildPExprString(false, prefix, " % ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case UMinus(r)               => buildPUnaryExprString(prefix, "-", toPrettyString(prefix)(r))
+    case Plus(l, r)              => buildPExprString(prefix, " + ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case Minus(l, r)             => buildPExprString(prefix, " - ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case Times(l, r)             => buildPExprString(prefix, " * ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case Div(l, r)               => buildPExprString(prefix, " / ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case Mod(l, r)               => buildPExprString(prefix, " % ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
     case Variable(n)             => prefix + n
-    case Block(expressions @ _*) => buildPExprString(true, prefix, "Block", expressions.map(expr => toPrettyString(prefix)(expr)): _*)
-    case Cond(l, r, e)           => buildPExprString(true, prefix, "Cond", toPrettyString(prefix)(l), toPrettyString(prefix)(r), toPrettyString(prefix)(e))
-    case Loop(l, r)              => buildPExprString(true, prefix, "Loop", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Assign(l, r)            => buildPExprString(false, prefix, " = ", l, toPrettyString(prefix)(r))
+    case Block(expressions @ _*) => buildPBlockString(prefix, "Block", expressions.map(expr => toPrettyString(prefix)(expr)): _*)
+    case Cond(l, r, e)           => buildPCondString(prefix, "if(", toPrettyString(prefix)(l), toPrettyString(prefix)(r), toPrettyString(prefix)(e))
+    case Loop(l, r)              => buildPLoopString(prefix, "while(", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
+    case Assign(l, r)            => buildPExprString(prefix, "Assign", l, toPrettyString(prefix)(r))
   }
 
   def toPrettyString(e: Expr): String = toPrettyString("")(e)
 
-  def buildPExprString(inside: Boolean, prefix: String, nodeString: String, strings: String*) = {
+  def buildPExprString(prefix: String, nodeString: String, l: String, r: String) = {
     val result = new StringBuilder(prefix)
-    if (inside) {
-      if (nodeString == "Cond") { result.append("if(" + prefix + ") ") }
-      else if (nodeString == "Loop") { result.append("while(" + prefix + ") ") }
-      result.append("{\n")
-      strings.tail.foreach { s =>
-        result.append(s)
-      }
-      result.append("\n}")
-    } else {
-      result.append(prefix)
-      if (strings.nonEmpty) {
-        result.append(strings.head)
-        result.append(nodeString)
-        strings.tail.foreach { s =>
-          result.append(s)
-        }
-      }
-    }
+    result.append("(")
+    result.append(l)
+    result.append(nodeString)
+    result.append(r)
+    result.append(")")
+    result.toString
+  }
+
+  def buildPBlockString(prefix: String, nodeString: String, strings: String*) = {
+    val result = new StringBuilder(prefix)
+    result.toString
+  }
+
+  def buildPLoopString(prefix: String, nodeString: String, l: String, r: String) = {
+    val result = new StringBuilder(prefix)
+    result.append(nodeString)
+    result.append(l)
+    result.append(")")
+    result.append(r)
+    result.toString
+  }
+
+  def buildPCondString(prefix: String, nodeString: String, l: String, r: String, e: String) = {
+    val result = new StringBuilder(prefix)
+    result.append(nodeString)
+    result.append(l)
+    result.append(")")
+    result.append(r)
+    result.append(e)
     result.toString
   }
 
   def buildPUnaryExprString(prefix: String, nodeString: String, exprString: String) = {
     val result = new StringBuilder(prefix)
     result.append(nodeString)
-    result.append("(")
-    result.append(EOL)
     result.append(exprString)
-    result.append(")")
     result.toString
   }
 
