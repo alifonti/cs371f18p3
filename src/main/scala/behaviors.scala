@@ -94,7 +94,7 @@ object behaviors {
     case Block(expressions @ _*) => buildPBlockString(prefix, "Block", expressions.map(expr => toPrettyString(prefix)(expr)): _*)
     case Cond(l, r, e)           => buildPCondString(prefix, "if(", toPrettyString(prefix)(l), toPrettyString(prefix)(r), toPrettyString(prefix)(e))
     case Loop(l, r)              => buildPLoopString(prefix, "while(", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Assign(l, r)            => buildPExprString(prefix, "Assign", l, toPrettyString(prefix)(r))
+    case Assign(l, r)            => buildPExprString(prefix, " = ", l, toPrettyString(prefix)(r))
   }
 
   def toPrettyString(e: Expr): String = toPrettyString("")(e)
@@ -111,6 +111,11 @@ object behaviors {
 
   def buildPBlockString(prefix: String, nodeString: String, strings: String*) = {
     val result = new StringBuilder(prefix)
+    result.append("{")
+    strings.foreach { s =>
+      result.append(s)
+    }
+    result.append("}")
     result.toString
   }
 
