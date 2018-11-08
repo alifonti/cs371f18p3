@@ -5,6 +5,8 @@ import org.jline.terminal.TerminalBuilder
 
 object CombinatorCalculator extends App {
 
+  val store = Execute.newStore
+
   def processExpr(input: String): Unit = {
     println("You entered: " + input)
     val result = CombinatorParser.parseAll(CombinatorParser.topLevel, input)
@@ -20,7 +22,7 @@ object CombinatorCalculator extends App {
       println(toPrettyString(expr))
 
       //println("It has size " + size(expr) + " and height " + height(expr))
-      //println("It evaluates to " + evaluate(expr))
+      println("It evaluates to " + Execute(store)(expr))
     }
   }
 
