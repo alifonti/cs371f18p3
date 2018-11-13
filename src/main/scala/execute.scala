@@ -59,12 +59,12 @@ object Execute {
       statements.foldLeft[Result](Success(Value.NULL))((_, s) => apply(store)(s))
 
     //below does not work yet
-//    case Loop(guard, body) =>
-//      var gValue = apply(store)(guard)
-//      while (gValue.asInstanceOf[Num] != Value.NULL) {
-//        apply(store)(body)
-//        gValue = apply(store)(guard)
-//      }
-//      Value.NULL
+    //    case Loop(guard, body) =>
+    //      var gValue = apply(store)(guard)
+    //      while (gValue.asInstanceOf[Num] != Value.NULL) {
+    //        apply(store)(body)
+    //        gValue = apply(store)(guard)
+    //      }
+    //      Value.NULL
   }
 }
