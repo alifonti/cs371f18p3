@@ -54,16 +54,16 @@ object Execute {
       store.put(left, rvalue)
       Value.NULL
     }
-    //below not working yet
+    //below may not working yet
     case Block(statements @ _*) =>
-      statements.foldLeft(Value.NULL.asInstanceOf[Value])((c, s) => apply(store)(s))
-    case Loop(guard, body) => {
-      var gvalue = apply(store)(guard)
-      while (gvalue != Value.NULL) {
+      statements.foldLeft(Value.NULL.asInstanceOf[Result])((_, s) => apply(store)(s))
+
+    case Loop(guard, body) =>
+      var gValue = apply(store)(guard)
+      while (gValue.asInstanceOf[Num] != Value.NULL) {
         apply(store)(body)
-        gvalue = apply(store)(guard)
+        gValue = apply(store)(guard)
       }
-      Value.NULL
-    }
+      Success(Value.NULL)
   }
 }
