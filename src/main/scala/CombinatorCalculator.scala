@@ -1,9 +1,15 @@
 package edu.luc.cs.laufer.cs473.expressions
 
+import scala.util.control.Breaks._
+
 import org.jline.reader.LineReaderBuilder
 import org.jline.terminal.TerminalBuilder
 
 object CombinatorCalculator extends App {
+
+  val terminal = TerminalBuilder.terminal
+  val reader = LineReaderBuilder.builder.terminal(terminal).build
+  val prompt = "Parser> "
 
   val store = Execute.newStore
 
@@ -22,21 +28,19 @@ object CombinatorCalculator extends App {
       println(toPrettyString(expr))
 
       //println("It has size " + size(expr) + " and height " + height(expr))
+      println("Memory: " + store)
       println("It evaluates to " + Execute(store)(expr))
+      println("Memory: " + store)
     }
   }
 
   if (args.length > 0) {
-    val terminal = TerminalBuilder.terminal
-    val reader = LineReaderBuilder.builder.terminal(terminal).build
-    val prompt = "Parser> "
-    try { processExpr(reader.readLine(prompt)) }
-    catch { case _: Throwable => println("found some exception") }
+    processExpr(reader.readLine(prompt))
   } else {
-    print("Enter infix expression: ")
-    scala.io.Source.stdin.getLines foreach { line =>
-      processExpr(line)
-      print("Enter infix expression: ")
+    breakable {
+      while (true) {
+        try { processExpr(reader.readLine(prompt)) }
+        catch { case _: Throwable => break } }
     }
   }
 }
