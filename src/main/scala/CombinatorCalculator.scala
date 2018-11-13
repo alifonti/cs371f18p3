@@ -35,7 +35,7 @@ object CombinatorCalculator extends App {
   }
 
   if (args.length > 0) {
-    processExpr(reader.readLine(prompt))
+    processExpr(args mkString " ")
   } else {
     breakable {
       while (true) {
