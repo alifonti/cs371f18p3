@@ -54,7 +54,7 @@ object Execute {
       store.put(left, rvalue)
       Value.NULL
     }
-    //Allan helped me understand Cond and Block concepts (specifically, how to use the Success "wrapper" in case matching). Thanks Allan!
+    //Allan helped me understand Cond, Block, and Loop concepts (specifically, how to use the Success "wrapper" in case matching). Thanks Allan!
     case Cond(guard, thenBranch, elseBranch) => {
       apply(store)(guard) match {
         case Success(Value.NULL)    => apply(store)(elseBranch)
@@ -73,13 +73,19 @@ object Execute {
       }
       Success(unwrapped)
     }
-    //    Loop still broken
-    //    case Loop(guard, body) =>
-    //      var gValue = apply(store)(guard)
-    //      while (gValue.asInstanceOf[Num] != Value.NULL) {
-    //        apply(store)(body)
-    //        gValue = apply(store)(guard)
-    //      }
-    //      Value.NULL
+    case Loop(guard, body) => {
+      var gValue: Value = Value.NULL
+      while(true) { //this is basically like "continually"
+        apply(store)(guard) match { //case matching on the guard of the loop
+          case Success(Value.NULL) => return Success(Value.NULL)
+          case Success(g) => apply(store)(body) match {
+            case Success(b)             => Success(b) //case matching on the body of the loop
+            case f @ Failure(exception) => return f
+          }
+          case f @ Failure(exception) => return f
+        }
+      }
+      Success(Value.NULL)
+    }
   }
 }
