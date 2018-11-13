@@ -23,12 +23,12 @@ object Execute {
   def newStore: Store = MMap.empty[String, Value]
 
   def apply(store: Store = MMap.empty[String, Value])(s: Expr): Result = s match {
-    case Constant(value)    => Success(Num(value))
-    case Plus(left, right)  => for {
+    case Constant(value) => Success(Num(value))
+    case Plus(left, right) => for {
       l <- apply(store)(left)
       r <- apply(store)(right)
     } yield Num(l.asInstanceOf[Num].value + r.asInstanceOf[Num].value)
-    case UMinus(left) =>  for {
+    case UMinus(left) => for {
       l <- apply(store)(left)
     } yield Num(-l.asInstanceOf[Num].value)
     case Minus(left, right) => for {
@@ -39,31 +39,32 @@ object Execute {
       l <- apply(store)(left)
       r <- apply(store)(right)
     } yield Num(l.asInstanceOf[Num].value * r.asInstanceOf[Num].value)
-    case Div(left, right)   => for {
+    case Div(left, right) => for {
       l <- apply(store)(left)
       r <- apply(store)(right)
     } yield Num(l.asInstanceOf[Num].value / r.asInstanceOf[Num].value)
-    case Mod(left, right)   => for {
+    case Mod(left, right) => for {
       l <- apply(store)(left)
       r <- apply(store)(right)
     } yield Num(l.asInstanceOf[Num].value % r.asInstanceOf[Num].value)
-    case Variable(name)     => Try(store(name))
+    case Variable(name) => Try(store(name))
     case Assign(left, right) => for {
       rvalue <- apply(store)(right)
     } yield {
       store.put(left, rvalue)
       Value.NULL
     }
-    //below may not working yet
+    //below not completely working yet
     case Block(statements @ _*) =>
-      statements.foldLeft(Value.NULL.asInstanceOf[Result])((_, s) => apply(store)(s))
+      statements.foldLeft[Result](Success(Value.NULL))((_, s) => apply(store)(s))
 
-    case Loop(guard, body) =>
-      var gValue = apply(store)(guard)
-      while (gValue.asInstanceOf[Num] != Value.NULL) {
-        apply(store)(body)
-        gValue = apply(store)(guard)
-      }
-      Success(Value.NULL)
+    //below does not work yet
+//    case Loop(guard, body) =>
+//      var gValue = apply(store)(guard)
+//      while (gValue.asInstanceOf[Num] != Value.NULL) {
+//        apply(store)(body)
+//        gValue = apply(store)(guard)
+//      }
+//      Value.NULL
   }
 }
