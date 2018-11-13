@@ -3,7 +3,7 @@ package edu.luc.cs.laufer.cs473.expressions
 import ast._
 
 import scala.collection.mutable.{Map => MMap}
-import scala.util.{Success, Try}
+import scala.util.{Failure, Success, Try}
 
 /** A run-time value is always a number for now. We represent NULL as 0. */
 sealed trait Value
@@ -54,11 +54,26 @@ object Execute {
       store.put(left, rvalue)
       Value.NULL
     }
-    //below not completely working yet
-    case Block(statements @ _*) =>
-      statements.foldLeft[Result](Success(Value.NULL))((_, s) => apply(store)(s))
-
-    //below does not work yet
+    //Allan helped me understand Cond and Block concepts (specifically, how to use the Success "wrapper" in case matching). Thanks Allan!
+    case Cond(guard, thenBranch, elseBranch) => {
+      apply(store)(guard) match {
+        case Success(Value.NULL)    => apply(store)(elseBranch)
+        case Success(_)             => apply(store)(thenBranch)
+        case f @ Failure(exception) => f
+      }
+    }
+    case Block(statements @ _*) => {
+      val it = statements.iterator
+      var unwrapped: Value = Value.NULL //notice this mutable variable will be assigned to the unwrapped value on line 70
+      while (it.hasNext) {
+        apply(store)(it.next()) match {
+          case Success(r)             => unwrapped = r
+          case f @ Failure(exception) => return f
+        }
+      }
+      Success(unwrapped)
+    }
+    //    Loop still broken
     //    case Loop(guard, body) =>
     //      var gValue = apply(store)(guard)
     //      while (gValue.asInstanceOf[Num] != Value.NULL) {
