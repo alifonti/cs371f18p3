@@ -90,10 +90,10 @@ object behaviors {
     case Times(l, r)             => buildPExprString(prefix, " * ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
     case Div(l, r)               => buildPExprString(prefix, " / ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
     case Mod(l, r)               => buildPExprString(prefix, " % ", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
-    case Variable(n)             => prefix + n
+    case Variable(n)             => n
     case Block(expressions @ _*) => buildPBlockString(prefix, "Block", expressions) //.map(expr => toPrettyString(prefix)(expr)): _*)
     case Cond(l, r, e)           => buildPCondString(prefix, "if(", toPrettyString(prefix)(l), toPrettyString(prefix)(r), toPrettyString(prefix)(e))
-    case Loop(l, r)              => buildPLoopString(prefix, "while(", toPrettyString(prefix + "  ")(l), toPrettyString(prefix + "  ")(r))
+    case Loop(l, r)              => buildPLoopString(prefix, "while(", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
     case Assign(l, r)            => buildPAssignString(prefix, " = ", l, toPrettyString(prefix)(r))
   }
 
@@ -114,7 +114,8 @@ object behaviors {
     result.append(l)
     result.append(nodeString)
     result.append(r)
-    result.append(";\n")
+    result.append(";")
+    result.append(EOL)
     result.toString
   }
 
@@ -126,7 +127,8 @@ object behaviors {
       result.append(toPrettyString(prefix + "  ")(e))
     }
     result.append(prefix)
-    result.append("}\n")
+    result.append("}")
+    result.append(EOL)
     result.toString
   }
 
