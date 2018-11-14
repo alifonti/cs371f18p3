@@ -71,11 +71,11 @@ object Execute {
           case f @ Failure(exception) => return f
         }
       }
-      Success(unwrapped)
+      Success(unwrapped) //re-wrap the value to be returned
     }
     case Loop(guard, body) => {
       var gValue: Value = Value.NULL
-      while(true) { //this is basically like "continually"
+      while (true) { //this is basically like "continually"
         apply(store)(guard) match { //case matching on the guard of the loop
           case Success(Value.NULL) => return Success(Value.NULL)
           case Success(g) => apply(store)(body) match {
@@ -85,7 +85,7 @@ object Execute {
           case f @ Failure(exception) => return f
         }
       }
-      Success(Value.NULL)
+      Success(Value.NULL) //loops always evaluated as NULL
     }
   }
 }

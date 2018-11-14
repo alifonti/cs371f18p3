@@ -9,14 +9,13 @@ object CombinatorCalculator extends App {
 
   val terminal = TerminalBuilder.terminal
   val reader = LineReaderBuilder.builder.terminal(terminal).build
-  val prompt = "Parser> "
+  val prompt = "Enter infix expression: "
 
   val store = Execute.newStore
 
   def processExpr(input: String): Unit = {
     println("You entered: " + input)
     val result = CombinatorParser.parseAll(CombinatorParser.topLevel, input)
-    //val result = CombinatorParser.parseAll(CombinatorParser.expr, input)
     if (result.isEmpty) {
       println("This expression could not be parsed")
     } else {
@@ -26,11 +25,9 @@ object CombinatorCalculator extends App {
       println(toFormattedString(expr))
       println("The un-parsed statements are: ")
       println(toPrettyString(expr))
-
       //println("It has size " + size(expr) + " and height " + height(expr))
-      println("Memory: " + store)
       println("It evaluates to " + Execute(store)(expr))
-      println("Memory: " + store)
+      println("Memory: " + store + "\n") //Sakai example prints updated map before and after each expression entered. I added a newline character to make this clearer
     }
   }
 
@@ -39,8 +36,10 @@ object CombinatorCalculator extends App {
   } else {
     breakable {
       while (true) {
+        println("Memory: " + store) //print the contents of the store immediately prior to prompting the user for an expression
         try { processExpr(reader.readLine(prompt)) }
-        catch { case _: Throwable => break } }
+        catch { case _: Throwable => break }
+      }
     }
   }
 }
