@@ -4,18 +4,6 @@ object TestFixtures {
 
   import ast._
 
-  def store() = Map[String, Value](
-    "x" -> Num(2),
-    "y" -> Num(3),
-    "r" -> Num(0)
-  )
-
-  val store1 = Execute.newStore //this store is empty
-  val store2 = store() //this store contains the above [String, Value] pairs
-  store1.put("x", Num(2))
-  store1.put("y", Num(3))
-  store1.put("r", Num(0)) //after this call to put, store1 === store2
-
   val complex1 =
     Div(
       Minus(
@@ -52,6 +40,10 @@ object TestFixtures {
       Constant(5)
     )
 
+  val store0 = Execute.newStore //this store is empty
+  val store1 = Execute.newStore //this store is also empty, but won't be after the following line
+  store1.put("x", Num(5))
+
   val simple1 = Block(
     Assign(
       "x", Constant(5)
@@ -59,6 +51,10 @@ object TestFixtures {
   )
 
   val simple1string = "x = 5;"
+
+  val store2 = Execute.newStore
+  store2.put("x", Num(5))
+  store2.put("y", Num(7))
 
   val simple2 = Block(
     Assign(
@@ -70,6 +66,9 @@ object TestFixtures {
   )
 
   val simple2string = "x = 5 ; y = 7;"
+
+  val store3 = Execute.newStore
+  store3.put("x", Num(5))
 
   val simple3 = Block(
     Div(

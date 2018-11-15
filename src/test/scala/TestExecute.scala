@@ -16,8 +16,9 @@ object MainExecute extends App {
 class TestExecute extends FunSuite {
   def testExecute(desc: String, ast: Expr, s0: Store, s1: Store) = {
     Execute(s0)(ast)
-    test("Executor/Interpreter works on " + desc) { assert (s0 === s1) }
+    test("Execution works on " + desc) { assert(s0 === s1) }
   }
 
-  //testExecute("Testing execution of assignment", simple1, resultStore, expectedStore)
+  testExecute("assignment", simple1, store0, store1)
+  //testExecute("assignment", simple1, store0, store1)
 }
