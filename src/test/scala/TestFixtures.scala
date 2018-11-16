@@ -1,5 +1,7 @@
 package edu.luc.cs.laufer.cs473.expressions
 
+import edu.luc.cs.laufer.cs473.expressions.Execute.Store
+
 object TestFixtures {
 
   import ast._
@@ -40,8 +42,10 @@ object TestFixtures {
       Constant(5)
     )
 
-  val store0 = Execute.newStore //this store is empty
-  val store1 = Execute.newStore //this store is also empty, but won't be after the following line
+  val store0: Store = Execute.newStore //this store is empty
+
+  // simple1 Test
+  val store1: Store = Execute.newStore //this store is also empty, but won't be after the following line
   store1.put("x", Num(5))
 
   val simple1 = Block(
@@ -52,24 +56,23 @@ object TestFixtures {
 
   val simple1string = "x = 5;"
 
-  val store2 = Execute.newStore
-  store2.put("x", Num(5))
-  store2.put("y", Num(7))
+  // simple2 Test
+  val store2: Store = Execute.newStore
+  store2.put("x", Num(4))
+  store2.put("y", Num(6))
 
   val simple2 = Block(
     Assign(
-      "x", Constant(5),
+      "x", Constant(4),
     ),
     Assign(
-      "y", Constant(7),
+      "y", Constant(6),
     ),
   )
 
-  val simple2string = "x = 5 ; y = 7;"
+  val simple2string = "x = 4 ; y = 6;"
 
-  val store3 = Execute.newStore
-  store3.put("x", Num(5))
-
+  // simple3 Test
   val simple3 = Block(
     Div(
       Minus(
@@ -84,6 +87,7 @@ object TestFixtures {
 
   val simple3string = "((1 + y2) - (3 * y4)) / 5;"
 
+  // simple4 Test
   val simple4 = Block(
     Assign(
       "x", Div(
@@ -99,6 +103,10 @@ object TestFixtures {
 
   val simple4string = "x = ((1 + y2) - (3 * y4)) / 5;"
 
+  // simple5 Test
+  val store5: Store = Execute.newStore
+  store5.put("x", Num(2))
+
   val simple5 = Block(
     Cond(
       Constant(1), Block(
@@ -111,6 +119,10 @@ object TestFixtures {
 
 
   val simple5string = "if (1) { x = 2; }"
+
+  // simple6 Test
+  val store6: Store = Execute.newStore
+  store6.put("x", Num(2))
 
   val simple6 = Block(
     Cond(
@@ -126,6 +138,7 @@ object TestFixtures {
 
   val simple6string = "if (1) { x = 2; } else { x = 3; }"
 
+  // simple7 Test
   val simple7 = Block(
     Block(
       Assign(
@@ -142,6 +155,7 @@ object TestFixtures {
 
   val simple7string = "{ r = r + x; y = y + 1 ; }"
 
+  // simple8 Test
   val simple8 = Block(
     Cond(
       Constant(4), Block(
@@ -162,7 +176,7 @@ object TestFixtures {
   val simple8string = "if (4) { r = r + x; y = y + 1; }"
 
   //simple9 and simple10 are identical AST's. simple9string and simple10string are identical but for whitespace characters
-
+  // simple9 and simple10 Tests
   val simple9 = Block(
     Loop(
       Variable("y"), Block(

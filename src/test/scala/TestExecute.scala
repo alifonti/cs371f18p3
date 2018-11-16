@@ -14,11 +14,22 @@ object MainExecute extends App {
 }
 
 class TestExecute extends FunSuite {
-  def testExecute(desc: String, ast: Expr, s0: Store, s1: Store) = {
-    Execute(s0)(ast)
-    test("Execution works on " + desc) { assert(s0 === s1) }
+  def testExecute(desc: String, ast: Expr, sB: Store) = {
+    val sA = Execute.newStore
+    Execute(sA)(ast)
+    test("Execution -> " + desc) { assert(sA === sB) }
   }
 
-  testExecute("assignment", simple1, store0, store1)
-  //testExecute("assignment", simple1, store0, store1)
+  testExecute("assignment", simple1, store1)
+  testExecute("multiple assignments", simple2, store2)
+  testExecute("assignment in conditional", simple5, store5)
+  testExecute("assignment in else branch", simple6, store6)
+
+  def testExecuteFailed(desc: String, ast: Expr, s0: Store) = {
+    val res = Execute(s0)(ast)
+    test("Execution failed as expected on " + desc) { assert(res.isFailure) }
+  }
+
+  testExecuteFailed("unassigned variables - 1", simple3, store0)
+  testExecuteFailed("unassigned variables - 2", simple7, store0)
 }
