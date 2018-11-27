@@ -44,7 +44,7 @@ object CombinatorParser extends JavaTokenParsers {
     */
   def statement: Parser[Expr] = (
     expr ~ ";" ^^ { case e ~ _ => e } //expression case
-    | ident ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) } //assignment case
+    | rep1sep(ident, ".") ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) } //assignment case
     | conditional
     | loop
     | block
