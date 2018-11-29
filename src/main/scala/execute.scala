@@ -8,6 +8,7 @@ import scala.util.{Failure, Success, Try}
 /** A run-time value is always a number for now. We represent NULL as 0. */
 sealed trait Value
 case class Num(value: Int) extends Value
+case class Ins(value: MMap[String, Value]) extends Value
 
 /** A companion object defining a useful Value instance. */
 object Value {
@@ -51,7 +52,7 @@ object Execute {
     case Assign(left, right) => for {
       rvalue <- apply(store)(right)
     } yield {
-      store.put(left, rvalue)
+      left.foreach(store.put(_, rvalue)) //uncertain about this, I just removed the error for now
       Value.NULL
     }
     //Allan helped me understand Cond, Block, and Loop concepts (specifically, how to use the Success "wrapper" in case matching). Thanks Allan!
