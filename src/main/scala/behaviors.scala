@@ -50,6 +50,8 @@ object behaviors {
     case Cond(l, r, e)           => buildExprString(prefix, "Cond", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r), toFormattedString(prefix + INDENT)(e))
     case Loop(l, r)              => buildExprString(prefix, "Loop", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r))
     case Assign(l, r)            => buildExprString(prefix, "Assign", l.head, toFormattedString(prefix + INDENT)(r))
+    case Select(f @ _*)          => buildSelectString(prefix, "Select", f)
+    case Struct(fields @ _*)     => buildStructString(prefix, "Struct", fields)
   }
 
   def toFormattedString(e: Expr): String = toFormattedString("")(e)
@@ -81,6 +83,31 @@ object behaviors {
     result.toString
   }
 
+  def buildSelectString(prefix: String, nodeString: String, strings: Seq[String]) = {
+    val result = new StringBuilder()
+    result.append(nodeString)
+    result.append("(")
+    result.append(EOL)
+    result.append(strings.mkString("."))
+    result.append(")")
+    result.toString()
+  }
+
+  def buildStructString(prefix: String, nodeString: String, fields: Seq[(String, Expr)]) = {
+    val result = new StringBuilder()
+    result.append(nodeString)
+    result.append("(")
+    result.append(EOL)
+    fields.foreach(f => {
+      result.append(f._1)
+      result.append(": ")
+      result.append(toFormattedString(f._2))
+      result.append(",")
+    })
+    result.append(")")
+    result.toString()
+  }
+
   // to Pretty-printer String
   def toPrettyString(prefix: String)(e: Expr): String = e match {
     case Constant(c)             => c.toString //prefix + c.toString
@@ -101,6 +128,7 @@ object behaviors {
 
   def toPrettyString(e: Expr): String = toPrettyString("")(e)
 
+  // builders
   def buildPExprString(prefix: String, nodeString: String, l: String, r: String) = {
     val result = new StringBuilder()
     result.append("(")
