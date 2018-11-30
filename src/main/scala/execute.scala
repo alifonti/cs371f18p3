@@ -2,7 +2,6 @@ package edu.luc.cs.laufer.cs473.expressions
 
 import ast._
 
-
 import scala.collection.mutable.{Map => MMap}
 import scala.util.{Failure, Success, Try}
 
@@ -54,7 +53,7 @@ object Execute {
       rvalue <- apply(store)(right)
       store <- Try(left.init.foldLeft(store)((r, f) => r(f).asInstanceOf[Ins].value)) //this gives the unwrapped value from an ins, which is an MMap
     } yield {
-      left.foreach(store.put(_, rvalue)) //uncertain about this, I just removed the error for now
+      store.put(left.last, rvalue)
       Value.NULL
     }
     //Allan helped me understand Cond, Block, and Loop concepts (specifically, how to use the Success "wrapper" in case matching). Thanks Allan!
