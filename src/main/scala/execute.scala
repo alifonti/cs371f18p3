@@ -2,6 +2,7 @@ package edu.luc.cs.laufer.cs473.expressions
 
 import ast._
 
+
 import scala.collection.mutable.{Map => MMap}
 import scala.util.{Failure, Success, Try}
 
@@ -51,6 +52,7 @@ object Execute {
     case Variable(name) => Try(store(name))
     case Assign(left, right) => for {
       rvalue <- apply(store)(right)
+      store <- Try(left.init.foldLeft(store)((r, f) => r(f).asInstanceOf[Ins].value)) //this gives the unwrapped value from an ins, which is an MMap
     } yield {
       left.foreach(store.put(_, rvalue)) //uncertain about this, I just removed the error for now
       Value.NULL
@@ -87,6 +89,19 @@ object Execute {
         }
       }
       Success(Value.NULL) //loops always evaluated as NULL
+    }
+
+    //also worked on this during Dr. L office hours 11/29
+    case Select(items @ _*) => Try {
+      val s = items.init.foldLeft(store)((r, f) =>
+        r(f).asInstanceOf[Ins].value) //this gives the unwrapped value from an ins, which is an MMap
+      s(items.last)
+    }
+
+    case Struct(fields @ _*) => {
+      // have: Seq[(String, Result)] = Seq[(String, Success[Value])] as long as everything succeeds
+      // want: Result where we have Success(Ins(Map[String, Value]))
+      Try(Ins(MMap(fields.map { case (k, v) => (k, Execute(store)(v).get) }: _*)))
     }
   }
 }

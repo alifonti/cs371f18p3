@@ -24,15 +24,16 @@ object CombinatorParser extends JavaTokenParsers {
       }
     }
 
-  /** factor ::= ident | ... where ident ::= [a-zA-Z] [a-zA-Z0-9]* */
-  /** factor ::= wholeNumber | "+" factor | "-" factor | "(" expr ")" */
+  /** factor ::= ident { "." ident }* | number | "+" factor | "-" factor | "(" expr ")" | struct */
   def factor: Parser[Expr] = (
-    wholeNumber ^^ { case s => Constant(s.toInt) }
-    | "+" ~> factor ^^ { case e => e }
-    | "-" ~> factor ^^ { case e => UMinus(e) }
-    | "(" ~ expr ~ ")" ^^ { case _ ~ e ~ _ => e }
-    | ident ^^ { case s => Variable(s) }
-  )
+    rep1sep(ident,".")  ^^ { case r=> Select(r) }
+      | wholeNumber ^^ { case s => Constant(s.toInt) }
+      | "+" ~> factor ^^ { case e => e }
+      | "-" ~> factor ^^ { case e => UMinus(e) }
+      | "(" ~ expr ~ ")" ^^ { case _ ~ e ~ _ => e }
+      | ident ^^ { case s => Variable(s) }
+      | struct
+    )
 
   /**
     * add support for these other constructs
@@ -44,28 +45,43 @@ object CombinatorParser extends JavaTokenParsers {
     */
   def statement: Parser[Expr] = (
     expr ~ ";" ^^ { case e ~ _ => e } //expression case
-    | rep1sep(ident, ".") ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) } //assignment case
-    | conditional
-    | loop
-    | block
-  )
+      | rep1sep(ident, ".") ~ "=" ~ expr ~ ";" ^^ { case v ~ _ ~ e ~ _ => Assign(v, e) } //assignment case
+      | conditional
+      | loop
+      | block
+    )
 
   def conditional: Parser[Expr] = (
     "if" ~ "(" ~ expr ~ ")" ~ block ~ opt("else" ~ block) ^^ {
       case _ ~ _ ~ e ~ _ ~ tb ~ Some(_ ~ eb) => Cond(e, tb, eb)
-      case _ ~ _ ~ e ~ _ ~ tb ~ None         => Cond(e, tb, Block())
+      case _ ~ _ ~ e ~ _ ~ tb ~ None => Cond(e, tb, Block())
     }
-  )
+    )
 
   def loop: Parser[Expr] = (
     "while" ~ "(" ~ expr ~ ")" ~ block ^^ { case _ ~ _ ~ e ~ _ ~ b => Loop(e, b) }
-  )
+    )
 
   def block: Parser[Expr] = (
     "{" ~ rep(statement) ~ "}" ^^ { case _ ~ statements ~ _ => Block(statements: _*) }
-  )
+    )
 
   def topLevel: Parser[Expr] = (
     rep1(statement) ^^ { case exprs => Block(exprs: _*) }
-  )
+    )
+
+  //this code is from Dr. L office hours 11/29
+  /** struct ::= "{" "}" | "{" field { "," field }* "}" */
+  def struct: Parser[Expr] =
+    "{" ~ "}" ^^ { case "{" ~ "}" => Struct() } |
+      "{" ~ rep1sep(field, ",") ~ "}" ^^ {
+        case _ ~ fs ~ _ => Struct(fs: _*)
+
+      }
+
+  //below definition is used to make the definition of struct less terse
+  /** field  ::= ident ":" expr */
+  def field: Parser[(String, Expr)] =
+    ident ~ ":" ~ expr ^^ { case i ~ ":" ~ r => (i, r) }
+
 }

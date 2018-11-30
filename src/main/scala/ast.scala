@@ -16,5 +16,5 @@ case class Block(expressions: Expr*) extends Expr
 case class Cond(guard: Expr, thenBranch: Expr, elseBranch: Expr) extends Expr
 case class Loop(guard: Expr, body: Expr) extends Expr
 case class Assign(left: Seq[String], right: Expr) extends Expr
-case class Select(receiver: Expr, field: String) extends Expr
+case class Select(fields: String*) extends Expr
 case class Struct(fields: (String, Expr)*) extends Expr
