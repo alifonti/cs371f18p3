@@ -49,7 +49,7 @@ object behaviors {
     case Block(expressions @ _*) => buildExprString(prefix, "Block", expressions.map(expr => toFormattedString(prefix)(expr)): _*)
     case Cond(l, r, e)           => buildExprString(prefix, "Cond", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r), toFormattedString(prefix + INDENT)(e))
     case Loop(l, r)              => buildExprString(prefix, "Loop", toFormattedString(prefix + INDENT)(l), toFormattedString(prefix + INDENT)(r))
-    case Assign(l, r)            => buildExprString(prefix, "Assign", l, toFormattedString(prefix + INDENT)(r))
+    case Assign(l, r)            => buildExprString(prefix, "Assign", l.head, toFormattedString(prefix + INDENT)(r))
   }
 
   def toFormattedString(e: Expr): String = toFormattedString("")(e)
@@ -95,6 +95,8 @@ object behaviors {
     case Cond(l, r, e)           => buildPCondString(prefix, "if(", toPrettyString(prefix)(l), toPrettyString(prefix)(r), toPrettyString(prefix)(e))
     case Loop(l, r)              => buildPLoopString(prefix, "while(", toPrettyString(prefix)(l), toPrettyString(prefix)(r))
     case Assign(l, r)            => buildPAssignString(prefix, " = ", l, toPrettyString(prefix)(r))
+    case Select(f @ _*)          => buildPSelectString(prefix, f)
+    case Struct(fields @ _*)     => buildPStructString(prefix, fields)
   }
 
   def toPrettyString(e: Expr): String = toPrettyString("")(e)
@@ -109,9 +111,9 @@ object behaviors {
     result.toString
   }
 
-  def buildPAssignString(prefix: String, nodeString: String, l: String, r: String) = {
+  def buildPAssignString(prefix: String, nodeString: String, l: Seq[String], r: String) = {
     val result = new StringBuilder()
-    result.append(l)
+    result.append(l.mkString("."))
     result.append(nodeString)
     result.append(r)
     result.append(";")
@@ -130,6 +132,29 @@ object behaviors {
     result.append("}")
     result.append(EOL)
     result.toString
+  }
+
+  def buildPStructString(prefix: String, fields: Seq[(String, Expr)]) = {
+    val result = new StringBuilder()
+    val EvaluatedPairs: Seq[(String, String)] = fields.map { case (s, e) => (s, toPrettyString(prefix)(e)) }
+    if (EvaluatedPairs.nonEmpty) {
+      EvaluatedPairs.foreach(p => {
+        result.append("{")
+        result.append(p._1)
+        result.append(": ")
+        result.append(p._2)
+        result.append("}")
+      })
+    } else {
+      result.append("{ }")
+    }
+    result.toString()
+  }
+
+  def buildPSelectString(prefix: String, fields: Seq[String]) = {
+    val result = new StringBuilder()
+    result.append(fields.mkString("."))
+    result.toString()
   }
 
   def buildPLoopString(prefix: String, nodeString: String, l: String, r: String) = {
