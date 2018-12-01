@@ -50,7 +50,7 @@ object TestFixtures {
 
   val simple1 = Block(
     Assign(
-      "x", Constant(5)
+      Seq[String]("x"), Constant(5)
     )
   )
 
@@ -63,10 +63,10 @@ object TestFixtures {
 
   val simple2 = Block(
     Assign(
-      "x", Constant(4),
+      Seq[String]("x"), Constant(4),
     ),
     Assign(
-      "y", Constant(6),
+      Seq[String]("y"), Constant(6),
     ),
   )
 
@@ -90,7 +90,7 @@ object TestFixtures {
   // simple4 Test
   val simple4 = Block(
     Assign(
-      "x", Div(
+      Seq[String]("x"), Div(
         Minus(
           Plus(
             Constant(1), Variable("y2"),
@@ -111,7 +111,7 @@ object TestFixtures {
     Cond(
       Constant(1), Block(
         Assign(
-          "x", Constant(2),
+          Seq[String]("x"), Constant(2),
         )),
       Block(
       ),
@@ -128,11 +128,11 @@ object TestFixtures {
     Cond(
       Constant(1), Block(
         Assign(
-          "x", Constant(2),
+          Seq[String]("x"), Constant(2),
         )),
       Block(
         Assign(
-          "x", Constant(3),
+          Seq[String]("x"), Constant(3),
         )),
     ))
 
@@ -142,11 +142,11 @@ object TestFixtures {
   val simple7 = Block(
     Block(
       Assign(
-        "r", Plus(
+        Seq[String]("r"), Plus(
           Variable("r"), Variable("x"),
         ),
       ), Assign(
-        "y", Plus(
+        Seq[String]("y"), Plus(
           Variable("y"), Constant(1),
         ),
       ),
@@ -160,11 +160,11 @@ object TestFixtures {
     Cond(
       Constant(4), Block(
         Assign(
-          "r", Plus(
+          Seq[String]("r"), Plus(
             Variable("r"), Variable("x"),
           ),
         ), Assign(
-          "y", Plus(
+          Seq[String]("y"), Plus(
             Variable("y"), Constant(1),
           ),
         ),
@@ -181,11 +181,11 @@ object TestFixtures {
     Loop(
       Variable("y"), Block(
         Assign(
-          "r", Plus(
+          Seq[String]("r"), Plus(
             Variable("r"), Variable("x"),
           ),
         ), Assign(
-          "y", Minus(
+          Seq[String]("y"), Minus(
             Variable("y"), Constant(1),
           ),
         ),
@@ -198,11 +198,11 @@ object TestFixtures {
     Loop(
       Variable("y"), Block(
         Assign(
-          "r", Plus(
+          Seq[String]("r"), Plus(
             Variable("r"), Variable("x"),
           ),
         ), Assign(
-          "y", Minus(
+          Seq[String]("y"), Minus(
             Variable("y"), Constant(1),
           ),
         ),
@@ -210,4 +210,12 @@ object TestFixtures {
     ))
 
   val simple10string = "while (y) { r = r + x ; y = y - 1 ;}"
+
+  val simple11 = Block(
+    Assign(
+      Seq[String]("x"), Struct(),
+    )
+  )
+
+  val simple11string = "x = {};"
 }

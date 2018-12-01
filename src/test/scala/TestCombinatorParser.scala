@@ -28,4 +28,5 @@ class TestCombinatorParser extends FunSuite {
   testParser(simple8string, simple8)
   testParser(simple9string, simple9)
   testParser(simple10string, simple10)
+  testParser(simple11string, simple11)
 }

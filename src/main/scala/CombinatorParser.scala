@@ -26,12 +26,12 @@ object CombinatorParser extends JavaTokenParsers {
 
   /** factor ::= ident { "." ident }* | number | "+" factor | "-" factor | "(" expr ")" | struct */
   def factor: Parser[Expr] = (
-    rep1sep(ident, ".") ^^ { case r => Select(r.head) }
+    ident ^^ { case s => Variable(s) }
+    | rep1sep(ident, ".") ^^ { case r => Select(r: _*) } //Allan helped us with this line
     | wholeNumber ^^ { case s => Constant(s.toInt) }
     | "+" ~> factor ^^ { case e => e }
     | "-" ~> factor ^^ { case e => UMinus(e) }
     | "(" ~ expr ~ ")" ^^ { case _ ~ e ~ _ => e }
-    | ident ^^ { case s => Variable(s) }
     | struct
   )
 
