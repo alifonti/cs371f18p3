@@ -24,6 +24,7 @@ class TestExecute extends FunSuite {
   testExecute("multiple assignments", simple2, store2)
   testExecute("assignment in conditional", simple5, store5)
   testExecute("assignment in else branch", simple6, store6)
+  testExecute("assignment of struct", simple11, store11)
 
   def testExecuteFailed(desc: String, ast: Expr, s0: Store) = {
     val res = Execute(s0)(ast)

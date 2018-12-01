@@ -1,6 +1,7 @@
 package edu.luc.cs.laufer.cs473.expressions
 
 import edu.luc.cs.laufer.cs473.expressions.Execute.Store
+import scala.collection.mutable.{Map => MMap}
 
 object TestFixtures {
 
@@ -210,6 +211,9 @@ object TestFixtures {
     ))
 
   val simple10string = "while (y) { r = r + x ; y = y - 1 ;}"
+
+  val store11: Store = Execute.newStore
+  store11.put("x", Ins(MMap.empty))
 
   val simple11 = Block(
     Assign(
